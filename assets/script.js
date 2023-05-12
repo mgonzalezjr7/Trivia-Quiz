@@ -71,6 +71,10 @@ function showQuestion() {
 
     html += "</ul>";
 
+    if (currentQuestion < question.length -1) {
+      html += `<p id="answer-feedback"></p>`;
+    }
+
     document.getElementById("Game").innerHTML = html;
   }
 }
@@ -81,6 +85,7 @@ function showGameOver() {
   Game.style.textAlign = "center";
   Game.innerHTML +=
     "<p>Congrats on finishing! Your score is: " + score + " out of 4</p>";
+  document.getElementById("answer-feedback").innerHTML = "";
 }
 
 function checkAnswer(answer) {
@@ -90,23 +95,27 @@ function checkAnswer(answer) {
     answer === questions[currentQuestion].answer
   ) {
     score++;
-    document.getElementById("answer-feedback").innerHTML = "Correct!";
     if (currentQuestion >= questions.length - 1) {
       clearInterval(timerId);
       showGameOver();
       saveScore();
     } else {
+      if (currentQuestion < questions.length -1) {
+        document.getElementById("answer-feedback").innerHTML = "Correct!";
+      }
       currentQuestion++;
       showQuestion();
     }
   } else {
     timeLeft -= 15;
-    document.getElementById("answer-feedback").innerHTML = "Wrong!";
     if (timeLeft <= 0) {
       clearInterval(timerId);
       showGameOver();
       saveScore();
     } else {
+      if (currentQuestion < questions.length -1) {
+        document.getElementById("answer-feedback").innerHTML = "Wrong!";
+      }
       currentQuestion++;
       showQuestion();
     }
