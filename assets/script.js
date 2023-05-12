@@ -37,6 +37,8 @@ let score = 0;
 let timeLeft = 120;
 let question;
 
+const leaderboard = [];
+
 // This function starts the game
 function letGameBegin() {
   shuffleArray(questions);
@@ -56,8 +58,7 @@ function shuffleArray(array) {
 //This function displays the question
 
 function showQuestion() {
-  if (questions[currentQuestion]);
-  {
+  if (questions[currentQuestion]) {
     const question = questions[currentQuestion];
     let html = `
         <h2>${question.question}</h2>
@@ -78,16 +79,22 @@ function showGameOver() {
   // Game.style.display = "none";
   Game.innerHTML = "<h2>Game Over<h2>";
   Game.style.textAlign = "center";
-  Game.innerHTML += "<p>Congrats on finishing! Your score is: " + score + " out of 4</p>";
+  Game.innerHTML +=
+    "<p>Congrats on finishing! Your score is: " + score + " out of 4</p>";
 }
+
 function checkAnswer(answer) {
   const question = questions[currentQuestion];
-  if (answer === questions[currentQuestion].answer) {
+  if (
+    questions[currentQuestion] &&
+    answer === questions[currentQuestion].answer
+  ) {
     score++;
     document.getElementById("answer-feedback").innerHTML = "Correct!";
     if (currentQuestion >= questions.length - 1) {
       clearInterval(timerId);
       showGameOver();
+      saveScore();
     } else {
       currentQuestion++;
       showQuestion();
@@ -98,6 +105,7 @@ function checkAnswer(answer) {
     if (timeLeft <= 0) {
       clearInterval(timerId);
       showGameOver();
+      saveScore();
     } else {
       currentQuestion++;
       showQuestion();
@@ -108,15 +116,54 @@ function checkAnswer(answer) {
 function updateTimer() {
   timeLeft--;
   document.getElementById("timer").innerHTML = timeLeft;
-  if (timeLeft === 0) {
+  if (questions[currentQuestion] && timeLeft === 0) {
     clearInterval(timerId);
     checkAnswer("");
   }
 }
-function sendGame() {
-  const html = `<h2>Results</h2><p>You got ${score} out of ${questions.length} questions correct.</p><button onclick="letGameBegin()">Play Again</button>`;
-  document.getElementById("Game").innerHTML = html;
+function saveScore() {
+  const initials = prompt("Enter your initials:");
+  const entry = { initials: initials, score: score };
+  leaderboard.push(entry);
+  localStorage.setItem(initials, score);
+  displayLeaderboard(leaderboard);
+}
+
+function createLeaderboard() {
+  let html = "<h2>Leaderboard</h2>";
+
+  leaderboard.sort((a, b) => b.score - a.score);
+
+  if (leaderboard.length === 0) {
+    html += "<p>No scores saved yet. Be the first!</p>";
+  } else {
+    html += "<ol>";
+    for (let entry of leaderboard) {
+      html += `<li>${entry.initials} : ${entry.score}</li>`;
+    }
+    html += "</ol>";
+  }
+  return html;
+}
+function displayLeaderboard() {
+  let html = createLeaderboard();
+
+  const leaderboardElement = document.getElementById("leaderboard");
+  if (leaderboardElement) {
+    leaderboardElement.innerHTML = html;
+  } else {
+    console.error("Leaderboard element not found.");
+  }
 }
 
 letGameBegin();
 let timerId = setInterval(updateTimer, 1000);
+
+// function displayLeaderboard() {
+//   let html = "<h2>Leaderboard</h2>";
+//   for (let i = 0; i < leaderboard.length; i++) {
+//     const { initials, score } = leaderboard[i];
+//     html += `<p>${i + 1}. ${initials}: ${score}</p>`;
+//   }
+//   document.getElementById('leaderboard').innerHTML = html;
+// }
