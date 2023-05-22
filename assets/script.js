@@ -35,7 +35,7 @@ const questions = [
 let currentQuestion = 0;
 let score = 0;
 let timeLeft = 120;
-let question;
+// let question;
 
 const leaderboard = [];
 
@@ -43,7 +43,7 @@ const leaderboard = [];
 function letGameBegin() {
   shuffleArray(questions);
   currentQuestion = 0;
-  score = 0;
+  // score = 0;
 
   showQuestion();
 }
@@ -56,7 +56,6 @@ function shuffleArray(array) {
 }
 
 //This function displays the question
-
 function showQuestion() {
   if (questions[currentQuestion]) {
     const question = questions[currentQuestion];
@@ -71,7 +70,7 @@ function showQuestion() {
 
     html += "</ul>";
 
-    if (currentQuestion < question.length -1) {
+    if (currentQuestion < question.length - 1) {
       html += `<p id="answer-feedback"></p>`;
     }
 
@@ -79,8 +78,8 @@ function showQuestion() {
   }
 }
 
+//This function displays the end results
 function showGameOver() {
-  // Game.style.display = "none";
   Game.innerHTML = "<h2>Game Over<h2>";
   Game.style.textAlign = "center";
   Game.innerHTML +=
@@ -88,6 +87,7 @@ function showGameOver() {
   document.getElementById("answer-feedback").innerHTML = "";
 }
 
+//This function checks to see whether the answer is correct or not
 function checkAnswer(answer) {
   const question = questions[currentQuestion];
   if (
@@ -100,7 +100,7 @@ function checkAnswer(answer) {
       showGameOver();
       saveScore();
     } else {
-      if (currentQuestion < questions.length -1) {
+      if (currentQuestion < questions.length - 1) {
         document.getElementById("answer-feedback").innerHTML = "Correct!";
       }
       currentQuestion++;
@@ -108,13 +108,13 @@ function checkAnswer(answer) {
     }
   } else {
     timeLeft -= 15;
-    if (timeLeft <= 0) {
+    if (currentQuestion >= questions.length - 1 || timeLeft <= 0) {
       clearInterval(timerId);
       showGameOver();
       saveScore();
     } else {
-      if (currentQuestion < questions.length -1) {
-        document.getElementById("answer-feedback").innerHTML = "Wrong!";
+      if (currentQuestion < questions.length - 1) {
+        document.getElementById("answer-feedback").innerHTML = "Incorrect!";
       }
       currentQuestion++;
       showQuestion();
@@ -167,12 +167,3 @@ function displayLeaderboard() {
 
 letGameBegin();
 let timerId = setInterval(updateTimer, 1000);
-
-// function displayLeaderboard() {
-//   let html = "<h2>Leaderboard</h2>";
-//   for (let i = 0; i < leaderboard.length; i++) {
-//     const { initials, score } = leaderboard[i];
-//     html += `<p>${i + 1}. ${initials}: ${score}</p>`;
-//   }
-//   document.getElementById('leaderboard').innerHTML = html;
-// }
